@@ -1,13 +1,23 @@
-import { animate, state, style, transition, trigger } from '@angular/animations';
+import { animate, animateChild, query, stagger, state, style, transition, trigger, useAnimation } from '@angular/animations';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Comment } from 'src/app/social-media/models/comment.model';
+import { slideAndFadeAnimation } from '../../animations/slide-and-fade.animation';
 
 @Component({
   selector: 'app-comments',
   templateUrl: './comments.component.html',
   styleUrls: ['./comments.component.scss'],
   animations: [
+    trigger('list',[
+       transition(':enter',[
+        query('@listItem',[
+          stagger(50,[
+            animateChild()
+          ])
+        ])
+       ])
+    ]),
     trigger('listItem', [
       state('default', style({
         transform: 'scale(1)',
@@ -25,6 +35,24 @@ import { Comment } from 'src/app/social-media/models/comment.model';
       transition('active => default', [
         animate('500ms ease-in-out')
       ]),
+      transition(':enter', [
+        query('span', [
+            style({
+                opacity: 0
+            }),
+        ]),
+        useAnimation(slideAndFadeAnimation,{
+          params:{
+            time:'250ms',
+            startColor:'rgb(201, 157, 242)'
+          }
+        }),
+        query('span', [
+            animate('500ms', style({
+                opacity: 1
+            }))
+        ]),
+    ])
     ])
   ]
 })
@@ -51,8 +79,16 @@ export class CommentsComponent implements OnInit {
     if(this.commentCtrl.invalid){
       return;
     }
-    this.newComment.emit(this.commentCtrl.value)
-    this.commentCtrl.reset()
+    const maxId = Math.max(...this.comments.map(comment => comment.id));
+    this.comments.unshift({
+      id:maxId + 1,
+      comment: this.commentCtrl.value,
+      createdDate : new Date().toISOString(),
+      userId:1
+    })
+    this.newComment.emit(this.commentCtrl.value);
+    this.commentCtrl.reset();
+    
   }
 
   onListItemMouseEnter(index: number) {
