@@ -5,7 +5,7 @@ import { SingleCandidateComponent } from './component/single-candidate/single-ca
 
 const routes: Routes = [
   {path:'candidates',component:CandidateListComponent},
-  {path:'candidate/:id',component:SingleCandidateComponent},
+  {path:'candidates/:id',component:SingleCandidateComponent},
   {path:'',redirectTo:'candidates',pathMatch:'full'}
 ];
 

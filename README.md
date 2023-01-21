@@ -30,3 +30,19 @@ Un subject est un observable qu'on peut émettre à la volé
 Un behaviourSubject est un observable qui réémet son émission à chaque nouvelle subscription
 
 Pattern subject as a service
+
+ng-container permet de poser des directives structurelles sur le template sans pour autant utiliser des div
+
+
+Dans ce template, vous avez deux nouveautés :
+
+ng-container  – il s'agit d'un élément où vous pouvez placer des directives structurelles (  *ngIf  et  *ngFor  , par exemple) qui disparaît à la compilation. Ça veut dire que vous n'êtes pas obligé d'ajouter une  div  ou un autre élément HTML si vous avez seulement besoin d'appliquer des directives structurelles ;
+
+*ngIf/else  +  ng-template  :
+
+le "  else  " d'un  *ngIf  fonctionne comme tout autre  else  : si la condition n'est pas remplie, le template passé à  else  sera affiché,
+
+ng-template  permet d'ajouter un bloc qui n'est pas affiché par défaut, mais auquel on peut faire référence. Dans ce cas, vous utilisez la référence locale  #buttons  pour passer tout le contenu du  ng-template  comme bloc "  else  " au  *ngIf  précédent.
+
+
+Il faut cast le paramètre en  number  (avec  +  ), car tout paramètre de route est automatiquement une string, même si on sait qu'il contiendra un nombre dans ce cas.
