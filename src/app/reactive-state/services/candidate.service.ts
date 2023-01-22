@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { BehaviorSubject, delay, Observable,tap,map } from "rxjs";
+import { BehaviorSubject, delay, 
+    Observable,tap,map, switchMap,take } from "rxjs";
 import { Candidate } from "../models/candidate.model";
 import { environment } from "src/environments/environment";
 @Injectable()
@@ -50,4 +51,33 @@ export class CandidateService{
         );
     }
 
+    refuseCandidate(id:number):void{
+        this.setLoadingStatus(true);
+        this.http.delete(`${environment.apiUrl}/candidates/${id}`).pipe( 
+           delay(1000), 
+           switchMap(()=>this.candidates$),
+           take(1),
+           map(candidates => candidates.filter(candidate => candidate.id !== id)),
+           tap(candidates =>{
+            this._candidates$.next(candidates)
+            this.setLoadingStatus(false);
+           })
+        ).subscribe()
+    }
+   //take 1 pour avoir la valeur des candidats au moment de la suppression
+  // ...candidate (une copie)
+
+   hireCandidate(id:number):void{
+    this.candidates$.pipe(
+      take(1),
+      map(candidates=>candidates
+        .map(candidate=>candidate.id ===id ?
+           {...candidate,company:'SnapFace LTD'}:
+           candidate )
+        ),
+        tap(updatedCandidates => this._candidates$.next(updatedCandidates)),
+        switchMap(updatedCandidates=>this.http.patch(`${environment.apiUrl}/candidates/${id}`,
+        updatedCandidates.find(candidate=>candidate.id===id)))
+    ).subscribe();
+   }
 }

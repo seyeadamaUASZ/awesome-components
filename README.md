@@ -46,3 +46,33 @@ ng-template  permet d'ajouter un bloc qui n'est pas affiché par défaut, mais a
 
 
 Il faut cast le paramètre en  number  (avec  +  ), car tout paramètre de route est automatiquement une string, même si on sait qu'il contiendra un nombre dans ce cas.
+
+
+Un enum est l'une des multiples manières de typer strictement des chaînes de caractères.
+
+Tout transformer en minuscules permet de créer une recherche insensible à la casse.
+
+combineLatest émet les dernières émissions de tous ses Observables sous forme de tuple à chaque fois que l'un d'entre eux émet.
+
+Le cast  search as string empêche TypeScript de râler parce qu'il n'arrive pas à identifier le type exact de search .
+
+
+
+Il s'agit d'une suppression pessimiste. Vous attendez donc que la requête réussisse avant de mettre à jour les données côté application :
+
+quand la requête réussit, vous transférez l'Observable vers lescandidates$ à l'instant t ;
+
+si vous ne mettez pas le take(1) , vous finirez dans un infinite loop ! Tout ce qui vient après ce switchMap ne doit être exécuté qu'une seule fois par suppression ;
+
+vous utilisez map pour modifier le tableau, retournant un tableau qui contient tous les candidats sauf celui qui comporte l' id passé en argument ;
+
+vous faites émettre la nouvelle liste de candidats et l'état de chargement.
+
+C'est cette dernière étape qui fait toute la magie du state management réactif : le reste de l'application n'a pas besoin de suivre l'avancée de la requête de suppression. Les components qui sont souscrits aux Observables du service vont simplement afficher les nouvelles données qui sont émises !
+
+
+Le state management réactif nous permet de modifier notre approche à la modification des données pour être pessimiste ou optimiste.
+
+Une action est pessimiste si vous attendez la réaction du serveur avant de modifier les données dans l'application.
+
+Une action est optimiste si vous modifiez les données de l'application avant même d'envoyer la requête au serveur, permettant une expérience utilisateur beaucoup plus lisse.
